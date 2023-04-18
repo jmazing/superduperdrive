@@ -6,18 +6,18 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
-import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
+import com.udacity.jwdnd.course1.cloudstorage.model.UserCredential;
 
 @Mapper
 public interface CredentialMapper {
     
     @Select("SELECT * FROM CREDENTIALS where url = #{url}")
-    Credential getCredential(String url);
+    UserCredential getCredential(String url);
 
     @Insert("INSERT INTO CREDENTIALS (url, username, key, password, userid)" + 
     "VALUES(#{url}, #{username}, #{key}, #{password}, #{userid})")
     @Options(useGeneratedKeys = true, keyProperty = "credentialid")
-    int insertCredential(Credential credential);
+    int insertCredential(UserCredential credential);
 
     @Delete("DELETE FROM CREDENTIALS where url = #{url}")
     void deleteCredential(String url);

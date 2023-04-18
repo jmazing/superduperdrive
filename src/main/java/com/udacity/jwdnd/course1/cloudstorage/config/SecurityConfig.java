@@ -25,13 +25,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        
+        // We must put in h2-console to access the h2 db
         http.authorizeRequests()
-            .antMatchers("/signup", "/css/**", "/js/**").permitAll()
+            .antMatchers("/signup", "/css/**", "/js/**", "/h2-console/**").permitAll()
             .anyRequest().authenticated();
+        
+        // This allows me to access the h2 db
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
 
         http.formLogin()
             .loginPage("/login")
-            .permitAll();
+            .permitAll()
+            .and()
+            .logout()
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/login");
 
         http.formLogin()
             .defaultSuccessUrl("/home", true);
