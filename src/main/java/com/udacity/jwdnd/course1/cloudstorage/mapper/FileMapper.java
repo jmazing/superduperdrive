@@ -12,9 +12,6 @@ import com.udacity.jwdnd.course1.cloudstorage.model.UserFile;
 
 @Mapper
 public interface FileMapper {
-    
-    @Select("SELECT * FROM FILES where filename = #{filename}")
-    UserFile getFile(String filename);
 
     @Select("SELECT * FROM FILES where userid = #{userid}")
     List<UserFile> getFiles(Integer userId);
@@ -24,6 +21,9 @@ public interface FileMapper {
     @Options(useGeneratedKeys = true, keyProperty = "fileId")
     int insertFile(UserFile userFile);
  
-    @Delete("DELETE FROM FILES where filename = #{filename}")
-    void deleteFile(String filename);
+    @Select("SELECT * FROM FILES where fileId = #{fileId}")
+    UserFile getFile(Integer fileId);
+
+    @Delete("DELETE FROM FILES where fileId = #{fileId}")
+    void deleteFile(Integer fileId);
 }

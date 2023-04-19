@@ -19,10 +19,7 @@ public class HomeController {
     
     @GetMapping("/home")
     public String getHomePage(Authentication authentication, Model model, @ModelAttribute("fileUploadError") String flashAttribute) {
-        System.out.println(fileService.getFiles(authentication.getName()));
         model.addAttribute("userFiles", fileService.getFiles(authentication.getName()));
-        System.out.println("flashAttribute is: " + flashAttribute.isEmpty());
-        model.addAttribute("fileUploadError", flashAttribute);
         return "home";
     }
 
