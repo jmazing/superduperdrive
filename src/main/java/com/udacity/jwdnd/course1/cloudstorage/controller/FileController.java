@@ -1,7 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -34,21 +33,18 @@ public class FileController {
             return "redirect:/result?error";
         } 
         
+        // If filename arleady exists throw an error
         String username = authentication.getName();
         String fileName = file.getOriginalFilename();
-        List<UserFile> userFiles = fileService.getFiles(username);
-
-        // if user is trying to upload file with the same name display an error
-        for(UserFile userFile: userFiles) {
-            String tmpFileName = userFile.getFilename();
-            if(fileName.equals(tmpFileName)) {
-                return "redirect:/result?error";
-            }
+        if(fileService.checkIfFileExists(username, fileName)) {
+            return "redirect:/result?error";
         }
 
+        // If the file could not be stored then throw an error
         if(!fileService.storeFile(username, file)) {
             return "redirect:/result?error";
         }
+
         return "redirect:/result?success";
     }
 

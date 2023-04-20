@@ -33,5 +33,16 @@ public class NoteService {
         return noteMapper.getNotes(userService.getUserId(username));
     }
 
+    public boolean checkIfNoteExists(String noteTitle, String username) {
+        List<UserNote> userNotes = getNotes(username);
+        for(UserNote tmpUserNote: userNotes) {
+            String tmpNoteTitle = tmpUserNote.getNotetitle();
+            if(noteTitle.equals(tmpNoteTitle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }
