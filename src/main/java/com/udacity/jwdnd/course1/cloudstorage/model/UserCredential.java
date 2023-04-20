@@ -8,8 +8,6 @@ public class UserCredential {
     private String key;
     private String password;
     private Integer userid;
-
-
     
     public UserCredential(Integer credentialid, String url, String username, String key, String password, Integer userid) {
         this.credentialid = credentialid;

@@ -26,7 +26,7 @@ public class NoteController {
             return "redirect:/result?error";
         }
 
-        // If note cannot be store then return an error
+        // If note cannot be stored then return an error
         if(!noteService.storeNote(username, userNote)) {
             return "redirect:/result?error";
         }
