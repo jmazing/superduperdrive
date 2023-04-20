@@ -52,7 +52,7 @@
                                 <tr>
                                     <td>
                                         <a class="btn btn-success" th:href="@{'/downloadFile?fileId=' + ${userFile.fileId}}">View</a>
-                                        <a class="btn btn-danger" th:href="@{/deleteFile}">Delete</a>
+                                        <a class="btn btn-danger" th:href="@{'/deleteFile?fileId=' + ${userFile.fileId}}">Delete</a>
                                     </td>
                                     <th scope="row" th:text="${userFile.filename}">ExampleFile.txt</th>
                                 </tr>

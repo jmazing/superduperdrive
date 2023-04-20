@@ -35,8 +35,7 @@ public class FileController {
         } 
         
         String username = authentication.getName();
-        String fileName = "";
-        fileName = file.getOriginalFilename();
+        String fileName = file.getOriginalFilename();
         List<UserFile> userFiles = fileService.getFiles(username);
 
         // if user is trying to upload file with the same name display an error
@@ -66,6 +65,12 @@ public class FileController {
             outputStream.close();
         }
 
+        return "redirect:/home";
+    }
+
+    @GetMapping(value="/deleteFile")
+    public String downloadFile(@RequestParam Integer fileId) throws IOException {
+        fileService.deleteFile(fileId);
         return "redirect:/home";
     }
 
