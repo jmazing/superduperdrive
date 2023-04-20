@@ -4,47 +4,51 @@ public class UserNote {
     
     private Integer noteid;
     private String notetitle;
-    private String notedescriptions;
+    private String notedescription;
     private Integer userid;
-
-    public UserNote(Integer noteid, String notetitle, String notedescriptions, Integer userid) {
+    
+    public UserNote(Integer noteid, String notetitle, String notedescription, Integer userid) {
         this.noteid = noteid;
         this.notetitle = notetitle;
-        this.notedescriptions = notedescriptions;
+        this.notedescription = notedescription;
         this.userid = userid;
     }
 
     public Integer getNoteid() {
         return noteid;
     }
-    
+
     public void setNoteid(Integer noteid) {
         this.noteid = noteid;
     }
-    
+
     public String getNotetitle() {
         return notetitle;
     }
-    
+
     public void setNotetitle(String notetitle) {
         this.notetitle = notetitle;
     }
-    
-    public String getNotedescriptions() {
-        return notedescriptions;
+
+    public String getNotedescription() {
+        return notedescription;
     }
-    
-    public void setNotedescriptions(String notedescriptions) {
-        this.notedescriptions = notedescriptions;
+
+    public void setNotedescription(String notedescription) {
+        this.notedescription = notedescription;
     }
-    
+
     public Integer getUserid() {
         return userid;
     }
-    
+
     public void setUserid(Integer userid) {
         this.userid = userid;
     }
 
-    
+    @Override
+    public String toString() {
+        return "UserNote [noteid=" + noteid + ", notetitle=" + notetitle + ", notedescription=" + notedescription
+                + ", userid=" + userid + "]";
+    }
 }

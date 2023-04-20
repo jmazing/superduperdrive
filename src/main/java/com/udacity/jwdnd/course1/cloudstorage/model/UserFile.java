@@ -1,5 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.model;
 
+import java.util.Arrays;
+
 public class UserFile {
     
     private Integer fileId;
@@ -64,5 +66,11 @@ public class UserFile {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    @Override
+    public String toString() {
+        return "UserFile [fileId=" + fileId + ", filename=" + filename + ", contenttype=" + contenttype + ", filesize="
+                + filesize + ", userid=" + userid + ", filedata=" + Arrays.toString(filedata) + "]";
     }
 }

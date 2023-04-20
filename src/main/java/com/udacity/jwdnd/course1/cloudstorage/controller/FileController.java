@@ -46,7 +46,9 @@ public class FileController {
             }
         }
 
-        fileService.storeFile(username, file);
+        if(!fileService.storeFile(username, file)) {
+            return "redirect:/result?error";
+        }
         return "redirect:/result?success";
     }
 
