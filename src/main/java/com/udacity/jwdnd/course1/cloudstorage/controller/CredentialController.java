@@ -1,6 +1,5 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,14 +16,9 @@ public class CredentialController {
         this.credentialService = credentialService;
     }
 
-    @PostMapping("/uploadCredential")
-    public String uploadCredential(Authentication authentication, UserCredential userCredential) {
+    @PostMapping("/handleCredential")
+    public String handleCredential(Authentication authentication, UserCredential userCredential) {
         String username = authentication.getName();
-        String key = RandomStringUtils.random(16, true, true);
-        userCredential.setKey(key);
-
-        // check error if credential is the same
-        
         
         // if credential cannot be stored properly then return an error
         if(!credentialService.storeCredential(username, userCredential)) {

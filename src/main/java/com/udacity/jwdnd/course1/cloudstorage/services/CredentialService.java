@@ -1,5 +1,8 @@
 package com.udacity.jwdnd.course1.cloudstorage.services;
 
+import java.util.List;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 import com.udacity.jwdnd.course1.cloudstorage.mapper.CredentialMapper;
@@ -20,14 +23,22 @@ public class CredentialService {
 
     public boolean storeCredential(String username, UserCredential userCredential) {
         boolean stored = false;
-        userCredential.setUserid(userService.getUserId(username));
-        encryptionService.encryptValue(userCredential.getPassword(), userCredential.getKey());
         
+        String key = RandomStringUtils.random(16, true, true);
+        userCredential.setKey(key);
+        userCredential.setUserid(userService.getUserId(username));
+        String encryptedPassword = encryptionService.encryptValue(userCredential.getPassword(), userCredential.getKey());
+        userCredential.setPassword(encryptedPassword);
+
         int row = credentialMapper.insertCredential(userCredential);
         if(row >= 0) {
             stored = true;
         }
         return stored;
+    }
+
+    public List<UserCredential> getCredentials(String username) {
+        return credentialMapper.getCredentials(userService.getUserId(username));
     }
 
 }
