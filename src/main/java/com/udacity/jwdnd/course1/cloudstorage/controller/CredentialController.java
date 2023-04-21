@@ -21,10 +21,22 @@ public class CredentialController {
     @PostMapping("/handleCredential")
     public String handleCredential(Authentication authentication, UserCredential userCredential) {
         String username = authentication.getName();
+        Integer credentialid = userCredential.getCredentialid();
+
+        if(credentialid > 0) {
+            credentialService.editCredential(userCredential);
+        } else { // handle adding a note
+
+            // If adding a note with the same title throw an error
+            String credentialURL = userCredential.getUrl();
+            if(credentialService.checkIfCredentialURLExists(username, credentialURL)) {
+                return "redirect:/result?error";
+            }
         
-        // if credential cannot be stored properly then return an error
-        if(!credentialService.storeCredential(username, userCredential)) {
-            return "redirect:/result?error";
+            // if credential cannot be stored properly then return an error
+            if(!credentialService.storeCredential(username, userCredential)) {
+                return "redirect:/result?error";
+            }
         }
 
         return "redirect:/result?success";

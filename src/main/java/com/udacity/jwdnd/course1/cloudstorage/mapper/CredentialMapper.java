@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.UserCredential;
 
@@ -26,5 +27,8 @@ public interface CredentialMapper {
 
     @Delete("DELETE FROM CREDENTIALS where credentialid = #{credentialid}")
     void deleteCredential(Integer credentialid);
+
+    @Update("UPDATE CREDENTIALS SET url=#{url}, username=#{username}, key=#{key}, password=#{password}")
+    int updateCredential(UserCredential credential);
     
 }

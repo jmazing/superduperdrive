@@ -36,7 +36,7 @@ public class FileController {
         // If filename arleady exists throw an error
         String username = authentication.getName();
         String fileName = file.getOriginalFilename();
-        if(fileService.checkIfFileExists(username, fileName)) {
+        if(fileService.checkIfFileTitleExists(username, fileName)) {
             return "redirect:/result?error";
         }
 

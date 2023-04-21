@@ -23,7 +23,6 @@ public class NoteController {
      */
     @PostMapping("/handleNote")
     public String handleNote(Authentication authentication, UserNote userNote) {
-        
         String username = authentication.getName();
         Integer noteid = userNote.getNoteid();
 

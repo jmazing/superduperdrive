@@ -44,7 +44,7 @@ public class FileService {
         fileMapper.deleteFile(fileId);
     }
 
-    public boolean checkIfFileExists(String username, String filename) {
+    public boolean checkIfFileTitleExists(String username, String filename) {
         List<UserFile> userFiles = getFiles(username);
         for(UserFile userFile: userFiles) {
             String tmpFileName = userFile.getFilename();

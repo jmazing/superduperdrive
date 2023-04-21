@@ -45,9 +45,23 @@ public class CredentialService {
         credentialMapper.deleteCredential(credentialid);
     }
 
-    // public String getDecryptedPassword(String username) {
-    //     Integer userid = userService.getUserId(username);
-        
-    // }
+    public void editCredential(UserCredential userCredential) {
+        String key = RandomStringUtils.random(16, true, true);
+        userCredential.setKey(key);
+        String encryptedPassword = encryptionService.encryptValue(userCredential.getPassword(), userCredential.getKey());
+        userCredential.setPassword(encryptedPassword);
+        credentialMapper.updateCredential(userCredential);
+    }
+
+    public boolean checkIfCredentialURLExists(String username, String credentialURL) {
+        List<UserCredential> userCredentials = getCredentials(username);
+        for(UserCredential tmpUserCredential: userCredentials) {
+            String tmpCredentialURL = tmpUserCredential.getUrl();
+            if(credentialURL.equals(tmpCredentialURL)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }
