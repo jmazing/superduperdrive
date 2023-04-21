@@ -124,7 +124,7 @@
                         </button>
 
                         <div class="table-responsive">
-                            <table th:each="userCredential:${userCredentials}" class="table table-striped" id="credentialTable">
+                            <table th:each="userCredential:${userTableCredentials}" th:object="${encryptionService}" class="table table-striped" id="credentialTable">
                                 <thead>
                                     <tr>
                                         <th style="width: 20%" scope="col"></th>
@@ -136,8 +136,10 @@
                                 <tbody>
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-success">Edit</button>
-                                        <a class="btn btn-danger">Delete</a>
+                                        <button type="button" class="btn btn-success" 
+                                        th:onclick="javascript:showCredentialModal([[${userCredential}]], 
+                                        [[${encryptionService.decryptValue(userCredential.password, userCredential.key)}]])">Edit</button>
+                                        <a class="btn btn-danger" th:href="@{'/deleteCredential?credentialid=' + ${userCredential.credentialid}}">Delete</a>
                                     </td>
                                     <th scope="row" th:text="${userCredential.url}">Example Credential URL</th>
                                     <td th:text="${userCredential.username}">Example Credential Username</td>
@@ -193,19 +195,19 @@
         <!--For opening the note modal-->
         <script type="text/javascript">
             // For opening the note modal
-            function showNoteModal(note) {
-                $('#note-id').val(note && note.noteid ? note.noteid : 0);
-                $('#note-title').val(note && note.notetitle ? note.notetitle : '');
-                $('#note-description').val(note && note.notedescription ? note.notedescription : '');
+            function showNoteModal(userNote) {
+                $('#note-id').val(userNote && userNote.noteid ? userNote.noteid : 0);
+                $('#note-title').val(userNote && userNote.notetitle ? userNote.notetitle : '');
+                $('#note-description').val(userNote && userNote.notedescription ? userNote.notedescription : '');
                 $('#noteModal').modal('show');
             }
 
             // For opening the credentials modal
-            function showCredentialModal(credentialId, url, username, password) {
-                $('#credential-id').val(credentialId ? credentialId : '');
-                $('#credential-url').val(url ? url : '');
-                $('#credential-username').val(username ? username : '');
-                $('#credential-password').val(password ? password : '');
+            function showCredentialModal(userCredential, decryptedPassword) {
+                $('#credential-id').val(userCredential && userCredential.credentialid ? userCredential.credentialid : 0);
+                $('#credential-url').val(userCredential && userCredential.url ? userCredential.url : '');
+                $('#credential-username').val(userCredential && userCredential.username ? userCredential.username : '');
+                $('#credential-password').val(userCredential && decryptedPassword ? decryptedPassword: '');
                 $('#credentialModal').modal('show');
             }
         </script>

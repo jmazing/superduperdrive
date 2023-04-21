@@ -2,7 +2,9 @@ package com.udacity.jwdnd.course1.cloudstorage.controller;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.UserCredential;
 import com.udacity.jwdnd.course1.cloudstorage.services.CredentialService;
@@ -26,6 +28,12 @@ public class CredentialController {
         }
 
         return "redirect:/result?success";
+    }
+
+    @GetMapping("/deleteCredential")
+    public String deleteCredential(@RequestParam Integer credentialid) {
+        credentialService.deleteCredential(credentialid);
+        return "redirect:/home";
     }
 
 }

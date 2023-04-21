@@ -41,4 +41,13 @@ public class CredentialService {
         return credentialMapper.getCredentials(userService.getUserId(username));
     }
 
+    public void deleteCredential(Integer credentialid) {
+        credentialMapper.deleteCredential(credentialid);
+    }
+
+    // public String getDecryptedPassword(String username) {
+    //     Integer userid = userService.getUserId(username);
+        
+    // }
+
 }
