@@ -48,7 +48,7 @@ public class FileController {
         return "redirect:/result?success";
     }
 
-    @GetMapping(value="/downloadFile")
+    @GetMapping("/downloadFile")
     public String downloadFile(@RequestParam Integer fileId, HttpServletResponse response) throws IOException {
         UserFile userFile = null;
         userFile = fileService.getFile(fileId);
@@ -66,7 +66,7 @@ public class FileController {
         return "redirect:/home";
     }
 
-    @GetMapping(value="/deleteFile")
+    @GetMapping("/deleteFile")
     public String downloadFile(@RequestParam Integer fileId) throws IOException {
         fileService.deleteFile(fileId);
         return "redirect:/home";

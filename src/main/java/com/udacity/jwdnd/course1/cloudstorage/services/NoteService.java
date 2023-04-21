@@ -33,7 +33,7 @@ public class NoteService {
         return noteMapper.getNotes(userService.getUserId(username));
     }
 
-    public boolean checkIfNoteExists(String noteTitle, String username) {
+    public boolean checkIfNoteTitleExists(String username, String noteTitle) {
         List<UserNote> userNotes = getNotes(username);
         for(UserNote tmpUserNote: userNotes) {
             String tmpNoteTitle = tmpUserNote.getNotetitle();
@@ -44,5 +44,12 @@ public class NoteService {
         return false;
     }
 
+    public void editNote(UserNote userNote) {
+        noteMapper.updateNote(userNote);
+    }
+
+    public void deleteNote(Integer noteid) {
+        noteMapper.deleteNote(noteid);
+    }
 
 }
