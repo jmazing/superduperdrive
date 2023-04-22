@@ -1,5 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 
 import org.junit.jupiter.api.AfterEach;
@@ -41,12 +43,6 @@ class CloudStorageApplicationTests {
 		if (this.driver != null) {
 			driver.quit();
 		}
-	}
-
-	@Test
-	public void getLoginPage() {
-		driver.get("http://localhost:" + this.port + "/login");
-		Assertions.assertEquals("Login", driver.getTitle());
 	}
 
 	/**
@@ -124,6 +120,12 @@ class CloudStorageApplicationTests {
 
 	}
 
+	@Test
+	public void getLoginPage() {
+		driver.get("http://localhost:" + this.port + "/login");
+		Assertions.assertEquals("Login", driver.getTitle());
+	}
+
 	/**
 	 * PLEASE DO NOT DELETE THIS TEST. You may modify this test to work with the 
 	 * rest of your code. 
@@ -191,7 +193,7 @@ class CloudStorageApplicationTests {
 	 */
 	@Test
 	public void testLargeUpload() throws InterruptedException {
-		boolean success = false;
+		boolean fileUpload = false;
 		
 		// Create a test account
 		doMockSignUp("Large File","Test","LFT","123");
@@ -209,12 +211,12 @@ class CloudStorageApplicationTests {
 		uploadButton.click();
 		try {
 			webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
-			success = true;
+			fileUpload = true;
 		} catch (org.openqa.selenium.TimeoutException e) {
-			System.out.println("Large File upload failed");
+			fail("Large File upload failed");
 		}
 
-		Assertions.assertEquals(success, true);
+		Assertions.assertEquals(fileUpload, true);
 	}
 
 

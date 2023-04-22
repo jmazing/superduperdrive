@@ -1,6 +1,11 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.File;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -16,15 +21,19 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import com.udacity.jwdnd.course1.cloudstorage.mapper.FileMapper;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthorizationTests {
+public class FileTests {
     
     @LocalServerPort
 	private int port;
 
 	private WebDriver driver;
+
+    private FileMapper fileMapper;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -34,6 +43,8 @@ public class AuthorizationTests {
 	@BeforeEach
 	public void beforeEach() {
 		this.driver = new ChromeDriver();
+        doMockSignUp("Julius", "Mazer", "jmazer", "123");
+        doLogIn("jmazer", "123");
 	}
 
 	@AfterEach
@@ -43,7 +54,7 @@ public class AuthorizationTests {
 		}
 	}
 
-	/**
+    /**
 	 * PLEASE DO NOT DELETE THIS method.
 	 * Helper method for Udacity-supplied sanity checks.
 	 **/
@@ -115,58 +126,48 @@ public class AuthorizationTests {
 		Assertions.assertTrue(driver.findElement(By.id("success-msg")).getText().contains("You successfully signed up!"));
 	}
 
-
-    @Test
-    public void getLoginPageUnauthorized() {
-        driver.get("http://localhost:" + this.port + "/login");
-        Assertions.assertEquals("Login", driver.getTitle());
+    private void returnHome() {
+        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+        WebElement homeLink = driver.findElement(By.id("return-home"));
+        homeLink.click();
+        try {
+			webDriverWait.until(ExpectedConditions.titleIs("Home"));
+		} catch (org.openqa.selenium.TimeoutException e) {
+			fail("Failed to return home from success page");
+		}
     }
 
     @Test
-    public void getSignupPageUnauthorized() {
-        driver.get("http://localhost:" + this.port + "/signup");
-        Assertions.assertEquals("Sign Up", driver.getTitle());
-    }
+    public void createDeleteFile() {
+        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+        String fileName = "superduperdrive.txt";
 
-    @Test 
-    public void unavailableUserLogin() {
-		WebElement errorMessage = null;
-		try {
-        	doLogIn("jmazer", "abc");
-		} catch(org.openqa.selenium.TimeoutException e) {
-			errorMessage = driver.findElement(By.id("error-msg"));
-		}
-        Assertions.assertEquals("Invalid username or password", errorMessage.getText());
-    }
-
-
-	@Test
-	public void signInSignOut() throws InterruptedException {
-		doMockSignUp("Julius", "Mazer", "jmazer", "123");
-		doLogIn("jmazer", "123");
-		Assertions.assertEquals("Home", driver.getTitle());
+        WebElement fileSelectButton = driver.findElement(By.id("fileUpload"));
+		fileSelectButton.sendKeys(new File(fileName).getAbsolutePath());
+        WebElement uploadButton = driver.findElement(By.id("uploadButton"));
 		
-		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
-		WebElement inputPassword = driver.findElement(By.id("logout-button"));
-		inputPassword.click();
-		
+        uploadButton.click();
 		try {
-			webDriverWait.until(ExpectedConditions.titleContains("Login"));
-		} catch(org.openqa.selenium.TimeoutException e) {
-			fail("Unable to logout");
+			webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
+		} catch (org.openqa.selenium.TimeoutException e) {
+			fail("Failed to upload superduperdirve.txt");
 		}
-		Assertions.assertEquals("Login", driver.getTitle());
 
-		driver.get("http://localhost:" + this.port + "/home");
-		try {
-			webDriverWait.until(ExpectedConditions.titleContains("Login"));
-		} catch(org.openqa.selenium.TimeoutException e) {
-			fail("Unable to redirect to login page");
-		}
-		Assertions.assertNotEquals(driver.getTitle(), "Home");
+        // Check if uploading file succeeded
+        Boolean fileUploaded = driver.findElements(By.id("success")).size() > 0;
+        assertTrue(fileUploaded);
 
-	}
+        returnHome();
 
-    
+        // Check if filename is there
+        WebElement fileNameText = driver.findElement(By.id("filename-text"));
+        assertEquals(fileName, fileNameText.getText());
 
+        // Delete file
+        WebElement fileDeleteButton = driver.findElement(By.id("delete-file-button"));
+        fileDeleteButton.click();
+
+        Boolean isFilePresent = driver.findElements(By.id("filename-text")).size() > 0;
+        assertFalse(isFilePresent);
+    }
 }
