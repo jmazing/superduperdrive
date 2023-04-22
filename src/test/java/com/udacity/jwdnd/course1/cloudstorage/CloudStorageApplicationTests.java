@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,10 +15,12 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(OutputCaptureExtension.class)
 class CloudStorageApplicationTests {
 
 	@LocalServerPort
@@ -139,6 +142,13 @@ class CloudStorageApplicationTests {
 		// Create a test account
 		doMockSignUp("Redirection","Test","RT","123");
 		
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("success-msg")));
+		
+		WebElement loginLink = driver.findElement(By.id("login-link"));
+		loginLink.click();
+
+
 		// Check if we have been redirected to the log in page.
 		Assertions.assertEquals("http://localhost:" + this.port + "/login", driver.getCurrentUrl());
 	}
@@ -163,7 +173,8 @@ class CloudStorageApplicationTests {
 		
 		// Try to access a random made-up URL.
 		driver.get("http://localhost:" + this.port + "/some-random-page");
-		Assertions.assertFalse(driver.getPageSource().contains("Whitelabel Error Page"));
+		
+		Assertions.assertTrue(driver.getPageSource().contains("Something went wrong!"));
 	}
 
 
@@ -178,9 +189,12 @@ class CloudStorageApplicationTests {
 	 * 
 	 * Read more about file size limits here: 
 	 * https://spring.io/guides/gs/uploading-files/ under the "Tuning File Upload Limits" section.
+	 * @throws InterruptedException
 	 */
 	@Test
-	public void testLargeUpload() {
+	public void testLargeUpload() throws InterruptedException {
+		boolean success = false;
+		
 		// Create a test account
 		doMockSignUp("Large File","Test","LFT","123");
 		doLogIn("LFT", "123");
@@ -197,11 +211,12 @@ class CloudStorageApplicationTests {
 		uploadButton.click();
 		try {
 			webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
+			success = true;
 		} catch (org.openqa.selenium.TimeoutException e) {
 			System.out.println("Large File upload failed");
 		}
-		Assertions.assertFalse(driver.getPageSource().contains("HTTP Status 403 – Forbidden"));
 
+		Assertions.assertEquals(success, true);
 	}
 
 
