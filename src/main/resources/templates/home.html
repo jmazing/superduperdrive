@@ -119,11 +119,11 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab">
-                        <button style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showCredentialModal()">
+                        <button id="add-new-credential-button" style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showCredentialModal()">
                             + Add a New Credential
                         </button>
 
-                        <div class="table-responsive">
+                        <div id="credentials-section" class="table-responsive">
                             <table th:each="userCredential:${userTableCredentials}" th:object="${encryptionService}" class="table table-striped" id="credentialTable">
                                 <thead>
                                     <tr>
@@ -136,14 +136,14 @@
                                 <tbody>
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-success" 
+                                        <button id="edit-credential-button" type="button" class="btn btn-success" 
                                         th:onclick="javascript:showCredentialModal([[${userCredential}]], 
                                         [[${encryptionService.decryptValue(userCredential.password, userCredential.key)}]])">Edit</button>
-                                        <a class="btn btn-danger" th:href="@{'/deleteCredential?credentialid=' + ${userCredential.credentialid}}">Delete</a>
+                                        <a id="delete-credential-button" class="btn btn-danger" th:href="@{'/deleteCredential?credentialid=' + ${userCredential.credentialid}}">Delete</a>
                                     </td>
-                                    <th scope="row" th:text="${userCredential.url}">Example Credential URL</th>
-                                    <td th:text="${userCredential.username}">Example Credential Username</td>
-                                    <td th:text="${userCredential.password}">Example Credential Password</td>
+                                    <th id="credential-url" scope="row" th:text="${userCredential.url}">Example Credential URL</th>
+                                    <td id="credential-username" th:text="${userCredential.username}">Example Credential Username</td>
+                                    <td id="credential-password" th:text="${userCredential.password}">Example Credential Password</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -162,23 +162,23 @@
                                         <form action="#" th:action="@{/handleCredential}" method="POST">
                                             <input type="hidden" name="credentialid" id="credential-id">
                                             <div class="form-group">
-                                                <label for="credential-url" class="col-form-label">URL</label>
-                                                <input type="text" name= "url" class="form-control" id="credential-url" maxlength="100" required>
+                                                <label for="modalcredentialurl" class="col-form-label">URL</label>
+                                                <input type="text" name= "url" class="form-control" id="modalcredentialurl" maxlength="100" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="credential-username" class="col-form-label">Username</label>
-                                                <input type="text" name= "username" class="form-control" id="credential-username" maxlength="30" required>
+                                                <label for="modalcredentialusername" class="col-form-label">Username</label>
+                                                <input type="text" name= "username" class="form-control" id="modalcredentialusername" maxlength="30" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="credential-password" class="col-form-label">Password</label>
-                                                <input type="text" name= "password" class="form-control" id="credential-password" maxlength="30" required>
+                                                <label for="modalcredentialpassword" class="col-form-label">Password</label>
+                                                <input type="text" name= "password" class="form-control" id="modalcredentialpassword" maxlength="30" required>
                                             </div>
                                             <button id="credentialSubmit" type="submit" class="d-none"></button>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="$('#credentialSubmit').click();">Save changes</button>
+                                        <button id="credential-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button id="credential-save" type="button" class="btn btn-primary" onclick="$('#credentialSubmit').click();">Save changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -193,24 +193,21 @@
         <script th:src="@{/js/bootstrap.min.js}"></script>
 
         <!--For opening the note modal-->
-        <script id="show-note-modal" type="text/javascript">
+        <script type="text/javascript">
             // For opening the note modal
             function showNoteModal(userNote) {
-                $('#note-id').val(userNote && userNote.noteid ? userNote.noteid : 0);
-                $('#note-title').val(userNote && userNote.notetitle ? userNote.notetitle : '');
-                $('#note-description').val(userNote && userNote.notedescription ? userNote.notedescription : '');
+                $('#note-id').attr('value', userNote && userNote.noteid ? userNote.noteid : 0);
+                $('#note-title').attr('value', userNote && userNote.notetitle ? userNote.notetitle : '');
+                $('#note-description').attr('value', userNote && userNote.notedescription ? userNote.notedescription : '');
                 $('#noteModal').modal('show');
             }
-        </script>
 
-        <!--For opening the note modal-->
-        <script id="show-credential-modal" type="text/javascript">
             // For opening the credentials modal
             function showCredentialModal(userCredential, decryptedPassword) {
-                $('#credential-id').val(userCredential && userCredential.credentialid ? userCredential.credentialid : 0);
-                $('#credential-url').val(userCredential && userCredential.url ? userCredential.url : '');
-                $('#credential-username').val(userCredential && userCredential.username ? userCredential.username : '');
-                $('#credential-password').val(userCredential && decryptedPassword ? decryptedPassword: '');
+                $('#credential-id').attr('value', userCredential && userCredential.credentialid ? userCredential.credentialid : 0);
+                $('#modalcredentialurl').attr('value', userCredential && userCredential.url ? userCredential.url : '');
+                $('#modalcredentialusername').attr('value', userCredential && userCredential.username ? userCredential.username : '');
+                $('#modalcredentialpassword').attr('value', userCredential && decryptedPassword ? decryptedPassword: '');
                 $('#credentialModal').modal('show');
             }
         </script>
