@@ -1,11 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.File;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +19,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class FileTests {
+public class NoteTests {
     
     @LocalServerPort
 	private int port;
@@ -41,6 +36,7 @@ public class FileTests {
 		this.driver = new ChromeDriver();
         doMockSignUp("Julius", "Mazer", "jmazer", "123");
         doLogIn("jmazer", "123");
+        clickNotesButtonFromHomePage();
 	}
 
 	@AfterEach
@@ -122,6 +118,17 @@ public class FileTests {
 		Assertions.assertTrue(driver.findElement(By.id("success-msg")).getText().contains("You successfully signed up!"));
 	}
 
+    private void clickNotesButtonFromHomePage() {
+        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+        WebElement notesButton = driver.findElement(By.id("nav-notes-tab"));
+        notesButton.click();
+        try {
+			webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("notes-section")));
+		} catch (org.openqa.selenium.TimeoutException e) {
+			fail("Failed to click notes button from home page");
+		}
+    }
+
     private void returnHome() {
         WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
         WebElement homeLink = driver.findElement(By.id("return-home"));
@@ -133,37 +140,73 @@ public class FileTests {
 		}
     }
 
-    @Test
-    public void createAndDeleteFile() {
+    private void createOrEditNote(String title, String description) {
         WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
-        String fileName = "superduperdrive.txt";
 
-        WebElement fileSelectButton = driver.findElement(By.id("fileUpload"));
-		fileSelectButton.sendKeys(new File(fileName).getAbsolutePath());
-        WebElement uploadButton = driver.findElement(By.id("uploadButton"));
-		
-        uploadButton.click();
-		try {
-			webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
-		} catch (org.openqa.selenium.TimeoutException e) {
-			fail("Failed to upload superduperdirve.txt");
-		}
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+		WebElement inputTitle = driver.findElement(By.id("note-title"));
+        inputTitle.clear();
+		inputTitle.sendKeys(title);
 
-        // Check if uploading file succeeded
-        Boolean fileUploaded = driver.findElements(By.id("success")).size() > 0;
-        assertTrue(fileUploaded);
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
+		WebElement inputDescription = driver.findElement(By.id("note-description"));
+        inputDescription.clear();
+		inputDescription.sendKeys(description);
 
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-save")));
+		WebElement saveNotesButton = driver.findElement(By.id("note-save"));
+		saveNotesButton.click();
+
+        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
+
+        // after clicking the save button we are sent to the success page
         returnHome();
+        clickNotesButtonFromHomePage();
+    }
 
-        // Check if filename is there
-        WebElement fileNameText = driver.findElement(By.id("filename-text"));
-        assertEquals(fileName, fileNameText.getText());
+    private void deleteNote() {
+        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("delete-note-button")));
+		WebElement deleteNoteButton = driver.findElement(By.id("delete-note-button"));
+        deleteNoteButton.click();
+    }
 
-        // Delete file
-        WebElement fileDeleteButton = driver.findElement(By.id("delete-file-button"));
-        fileDeleteButton.click();
 
-        Boolean isFilePresent = driver.findElements(By.id("filename-text")).size() > 0;
-        assertFalse(isFilePresent);
+    @Test
+    public void createAndDeleteNote() {
+
+        // Clicking add new note button
+        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+        WebElement addANewNoteButton = driver.findElement(By.id("add-new-note-button"));
+        addANewNoteButton.click();
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("noteModal")));
+
+        // Creating Note
+        createOrEditNote("mynote", "123");
+        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-title-text")));
+        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-description-text")));
+        WebElement noteTitleText = driver.findElement(By.id("note-title-text"));
+        Assertions.assertEquals("mynote", noteTitleText.getText());
+        WebElement noteDescriptionText = driver.findElement(By.id("note-description-text"));
+        Assertions.assertEquals("123", noteDescriptionText.getText());
+
+        // Clicking edit button
+        WebElement editNoteButton = driver.findElement(By.id("edit-note-button"));
+        editNoteButton.click();
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("noteModal")));
+
+        // Editing Note
+        createOrEditNote("myothernote", "456");
+        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-title-text")));
+        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-description-text")));
+        noteTitleText = driver.findElement(By.id("note-title-text"));
+        Assertions.assertEquals("myothernote", noteTitleText.getText());
+        noteDescriptionText = driver.findElement(By.id("note-description-text"));
+        Assertions.assertEquals("456", noteDescriptionText.getText());
+
+        // Delete Note
+        deleteNote();
+        Boolean notesDeleted = driver.findElements(By.id("notesTable")).size() == 0;
+        Assertions.assertTrue(notesDeleted);
     }
 }

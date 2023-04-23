@@ -61,12 +61,12 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
-                        <button style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
+                        <button id="add-new-note-button" style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
                             + Add a New Note
                         </button>
 
-                        <div class="table-responsive">
-                            <table th:each="userNote:${userNotes}" class="table table-striped" id="userTable">
+                        <div id ="notes-section" class="table-responsive">
+                            <table th:each="userNote:${userNotes}" class="table table-striped" id="notesTable">
                                 <thead>
                                     <tr>
                                         <th style="width: 20%" scope="col"></th>
@@ -77,11 +77,11 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <button type="button" class="btn btn-success" th:onclick="javascript:showNoteModal([[${userNote}]])">Edit</button>
-                                            <a class="btn btn-danger" th:href="@{'/deleteNote?noteid=' + ${userNote.noteid}}">Delete</a>
+                                            <button id="edit-note-button" type="button" class="btn btn-success" th:onclick="javascript:showNoteModal([[${userNote}]])">Edit</button>
+                                            <a id="delete-note-button" class="btn btn-danger" th:href="@{'/deleteNote?noteid=' + ${userNote.noteid}}">Delete</a>
                                         </td>
-                                        <th scope="row" th:text="${userNote.notetitle}">Example Note Title</th>
-                                        <td th:text="${userNote.notedescription}">Example Note Description </td>
+                                        <th id="note-title-text" scope="row" th:text="${userNote.notetitle}">Example Note Title</th>
+                                        <td id="note-description-text" th:text="${userNote.notedescription}">Example Note Description </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -111,8 +111,8 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="$('#noteSubmit').click();">Save changes</button>
+                                        <button id="note-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button id="note-save" type="button" class="btn btn-primary" onclick="$('#noteSubmit').click();">Save changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -193,7 +193,7 @@
         <script th:src="@{/js/bootstrap.min.js}"></script>
 
         <!--For opening the note modal-->
-        <script type="text/javascript">
+        <script id="show-note-modal" type="text/javascript">
             // For opening the note modal
             function showNoteModal(userNote) {
                 $('#note-id').val(userNote && userNote.noteid ? userNote.noteid : 0);
@@ -201,7 +201,10 @@
                 $('#note-description').val(userNote && userNote.notedescription ? userNote.notedescription : '');
                 $('#noteModal').modal('show');
             }
+        </script>
 
+        <!--For opening the note modal-->
+        <script id="show-credential-modal" type="text/javascript">
             // For opening the credentials modal
             function showCredentialModal(userCredential, decryptedPassword) {
                 $('#credential-id').val(userCredential && userCredential.credentialid ? userCredential.credentialid : 0);
@@ -211,5 +214,6 @@
                 $('#credentialModal').modal('show');
             }
         </script>
+
     </body>
 </html>
