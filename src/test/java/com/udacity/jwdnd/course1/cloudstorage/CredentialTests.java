@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -170,52 +171,74 @@ public class CredentialTests {
         clickCredentialsButtonFromHomePage();
     }
 
-    private void deleteCredential() {
-        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
-        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("delete-credential-button")));
-		WebElement deleteNoteButton = driver.findElement(By.id("delete-credential-button"));
-        deleteNoteButton.click();
-    }
+	@Test
+	public void createCredential() {
+		// Clicking add new credential button
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+		WebElement addANewCredentialButton = driver.findElement(By.id("add-new-credential-button"));
+		addANewCredentialButton.click();
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credentialModal")));
 
-    @Test
-    public void createAndDeleteCredential() {
-
-        // Clicking add new note button
-        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
-        WebElement addANewCredentialButton = driver.findElement(By.id("add-new-credential-button"));
-        addANewCredentialButton.click();
-        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credentialModal")));
-
-        // Creating Credential
-        createOrEditCredential("https://google.com", "jmazer", "123");
-        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("credential-url")));
-        WebElement modalcredentialUrl = driver.findElement(By.id("credential-url"));
+		// Creating Credential
+		createOrEditCredential("https://google.com", "jmazer", "123");
+		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("credential-url")));
+		WebElement modalcredentialUrl = driver.findElement(By.id("credential-url"));
 		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("credential-username")));
-        WebElement modalcredentialUsername = driver.findElement(By.id("credential-username"));
+		WebElement modalcredentialUsername = driver.findElement(By.id("credential-username"));
 		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("credential-password")));
-        WebElement modalcredentialPassword = driver.findElement(By.id("credential-password"));
+		WebElement modalcredentialPassword = driver.findElement(By.id("credential-password"));
 		Assertions.assertEquals("https://google.com", modalcredentialUrl.getText());
 		Assertions.assertEquals("jmazer", modalcredentialUsername.getText());
 		Assertions.assertEquals(24, modalcredentialPassword.getText().length());
+	}
 
-        // Clicking edit button
-        WebElement editCredentialButton = driver.findElement(By.id("edit-credential-button"));
-        editCredentialButton.click();
-        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credentialModal")));
+	@Test
+	public void deleteCredential() {
+		boolean isEditButtonPresent = false;
+		createCredential();
+
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("delete-credential-button")));
+		WebElement deleteNoteButton = driver.findElement(By.id("delete-credential-button"));
+        deleteNoteButton.click();
+		Assertions.assertTrue(driver.findElement(By.id("result-success")).getText().contains("The operation was a success"));
+
+		// after clicking the save button we are sent to the success page
+		returnHome();
+		clickCredentialsButtonFromHomePage();
+
+		try {
+			driver.findElement(By.id("edit-credential-button"));
+			isEditButtonPresent = true;
+		} catch(NoSuchElementException e) {
+			isEditButtonPresent = false;
+		}
+		Assertions.assertFalse(isEditButtonPresent);
+	}
+
+	@Test
+	public void editCredential() {
+		createCredential();
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		// Clicking edit button
+		WebElement editCredentialButton = driver.findElement(By.id("edit-credential-button"));
+		editCredentialButton.click();
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credentialModal")));
 
 		// Check that password is decrypted in the modal view 
 		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("modalcredentialpassword")));
-        WebElement modalCredentialPassword = driver.findElement(By.id("modalcredentialpassword"));
+		WebElement modalCredentialPassword = driver.findElement(By.id("modalcredentialpassword"));
 		Assertions.assertEquals("123", modalCredentialPassword.getAttribute("value"));
 
-        // Editing Credential
-        createOrEditCredential("https://yahoo.com", "jmazer1", "567");
+		// Editing Credential
+		createOrEditCredential("https://yahoo.com", "jmazer1", "567");
 		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("credential-url")));
-        modalcredentialUrl = driver.findElement(By.id("credential-url"));
+		WebElement modalcredentialUrl = driver.findElement(By.id("credential-url"));
 		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("credential-username")));
-        modalcredentialUsername = driver.findElement(By.id("credential-username"));
+		WebElement modalcredentialUsername = driver.findElement(By.id("credential-username"));
 		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("credential-password")));
-        modalcredentialPassword = driver.findElement(By.id("credential-password"));
+		WebElement modalcredentialPassword = driver.findElement(By.id("credential-password"));
 		Assertions.assertEquals("https://yahoo.com", modalcredentialUrl.getText());
 		Assertions.assertEquals("jmazer1", modalcredentialUsername.getText());
 		Assertions.assertEquals(24, modalcredentialPassword.getText().length());
@@ -227,16 +250,7 @@ public class CredentialTests {
 
 		// Check that password is decrypted in the modal view 
 		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("modalcredentialpassword")));
-        modalCredentialPassword = driver.findElement(By.id("modalcredentialpassword"));
+		modalCredentialPassword = driver.findElement(By.id("modalcredentialpassword"));
 		Assertions.assertEquals("567", modalCredentialPassword.getAttribute("value"));
-
-		// Close the modal view
-		WebElement closeCredentialButton = driver.findElement(By.id("credential-close"));
-		closeCredentialButton.click();
-
-        // Delete Note
-        deleteCredential();
-        Boolean credentialDeleted = driver.findElements(By.id("credentialTable")).size() == 0;
-        Assertions.assertTrue(credentialDeleted);
-    }
+	}
 }
