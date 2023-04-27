@@ -196,18 +196,18 @@
         <script type="text/javascript">
             // For opening the note modal
             function showNoteModal(userNote) {
-                $('#note-id').attr('value', userNote && userNote.noteid ? userNote.noteid : 0);
-                $('#note-title').attr('value', userNote && userNote.notetitle ? userNote.notetitle : '');
-                $('#note-description').attr('value', userNote && userNote.notedescription ? userNote.notedescription : '');
+                $('#note-id').val(userNote && userNote.noteid ? userNote.noteid : 0);
+                $('#note-title').val(userNote && userNote.notetitle ? userNote.notetitle : '');
+                $('#note-description').val(userNote && userNote.notedescription ? userNote.notedescription : '');
                 $('#noteModal').modal('show');
             }
 
             // For opening the credentials modal
             function showCredentialModal(userCredential, decryptedPassword) {
-                $('#credential-id').attr('value', userCredential && userCredential.credentialid ? userCredential.credentialid : 0);
-                $('#modalcredentialurl').attr('value', userCredential && userCredential.url ? userCredential.url : '');
-                $('#modalcredentialusername').attr('value', userCredential && userCredential.username ? userCredential.username : '');
-                $('#modalcredentialpassword').attr('value', userCredential && decryptedPassword ? decryptedPassword: '');
+                $('#credential-id').val(userCredential && userCredential.credentialid ? userCredential.credentialid : 0);
+                $('#modalcredentialurl').val(userCredential && userCredential.url ? userCredential.url : '');
+                $('#modalcredentialusername').val(userCredential && userCredential.username ? userCredential.username : '');
+                $('#modalcredentialpassword').val(userCredential && decryptedPassword ? decryptedPassword: '');
                 $('#credentialModal').modal('show');
             }
         </script>
