@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -140,73 +141,105 @@ public class NoteTests {
 		}
     }
 
-    private void createOrEditNote(String title, String description) {
-        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+	@Test
+	public void createNote() {
+		// Clicking add new note button
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+		WebElement addANewNoteButton = driver.findElement(By.id("add-new-note-button"));
+		addANewNoteButton.click();
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("noteModal")));
 
-        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+		String title = "mynote";
+		String description = "123";
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
 		WebElement inputTitle = driver.findElement(By.id("note-title"));
-        inputTitle.clear();
+		inputTitle.clear();
 		inputTitle.sendKeys(title);
 
-        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
 		WebElement inputDescription = driver.findElement(By.id("note-description"));
-        inputDescription.clear();
+		inputDescription.clear();
 		inputDescription.sendKeys(description);
 
-        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-save")));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-save")));
 		WebElement saveNotesButton = driver.findElement(By.id("note-save"));
 		saveNotesButton.click();
 
-        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
+		Assertions.assertTrue(driver.findElement(By.id("result-success")).getText().contains("The operation was a success"));
 
-        // after clicking the save button we are sent to the success page
-        returnHome();
-        clickNotesButtonFromHomePage();
-    }
+		// after clicking the save button we are sent to the success page
+		returnHome();
+		clickNotesButtonFromHomePage();
+	}
 
-    private void deleteNote() {
-        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+	@Test
+	public void deleteNote() {
+		boolean isEditButtonPresent = false;
+
+		createNote();
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
         webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("delete-note-button")));
 		WebElement deleteNoteButton = driver.findElement(By.id("delete-note-button"));
         deleteNoteButton.click();
-    }
+		Assertions.assertTrue(driver.findElement(By.id("result-success")).getText().contains("The operation was a success"));
+
+		// after clicking the save button we are sent to the success page
+		returnHome();
+		clickNotesButtonFromHomePage();
+
+		try {
+			driver.findElement(By.id("edit-note-button"));
+			isEditButtonPresent = true;
+		} catch(NoSuchElementException e) {
+			isEditButtonPresent = false;
+		}
+		Assertions.assertFalse(isEditButtonPresent);
+	}
+
+	@Test
+	public void editNote() {
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		createNote();
+		// Clicking edit button
+		WebElement editNoteButton = driver.findElement(By.id("edit-note-button"));
+		editNoteButton.click();
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("noteModal")));
+
+		// Editing Note
+		String title = "myothernote";
+		String description = "456";
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+		WebElement inputTitle = driver.findElement(By.id("note-title"));
+		inputTitle.clear();
+		inputTitle.sendKeys(title);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
+		WebElement inputDescription = driver.findElement(By.id("note-description"));
+		inputDescription.clear();
+		inputDescription.sendKeys(description);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-save")));
+		WebElement saveNotesButton = driver.findElement(By.id("note-save"));
+		saveNotesButton.click();
 
 
-    @Test
-    public void createAndDeleteNote() {
+		Assertions.assertTrue(driver.findElement(By.id("result-success")).getText().contains("The operation was a success"));
 
-        // Clicking add new note button
-        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
-        WebElement addANewNoteButton = driver.findElement(By.id("add-new-note-button"));
-        addANewNoteButton.click();
-        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("noteModal")));
+		// after clicking the save button we are sent to the success page
+		returnHome();
+		clickNotesButtonFromHomePage();
 
-        // Creating Note
-        createOrEditNote("mynote", "123");
-        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-title-text")));
+
+
+		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-title-text")));
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-description-text")));
         WebElement noteTitleText = driver.findElement(By.id("note-title-text"));
-        Assertions.assertEquals("mynote", noteTitleText.getText());
-        WebElement noteDescriptionText = driver.findElement(By.id("note-description-text"));
-        Assertions.assertEquals("123", noteDescriptionText.getText());
-
-        // Clicking edit button
-        WebElement editNoteButton = driver.findElement(By.id("edit-note-button"));
-        editNoteButton.click();
-        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("noteModal")));
-
-        // Editing Note
-        createOrEditNote("myothernote", "456");
-        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-title-text")));
-        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("note-description-text")));
-        noteTitleText = driver.findElement(By.id("note-title-text"));
         Assertions.assertEquals("myothernote", noteTitleText.getText());
-        noteDescriptionText = driver.findElement(By.id("note-description-text"));
+        WebElement noteDescriptionText = driver.findElement(By.id("note-description-text"));
         Assertions.assertEquals("456", noteDescriptionText.getText());
 
-        // Delete Note
-        deleteNote();
-        Boolean notesDeleted = driver.findElements(By.id("notesTable")).size() == 0;
-        Assertions.assertTrue(notesDeleted);
-    }
+	}
 }

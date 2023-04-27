@@ -69,7 +69,7 @@ public class FileController {
     @GetMapping("/deleteFile")
     public String downloadFile(@RequestParam Integer fileId) throws IOException {
         fileService.deleteFile(fileId);
-        return "redirect:/home";
+        return "redirect:/result?success";
     }
 
 }

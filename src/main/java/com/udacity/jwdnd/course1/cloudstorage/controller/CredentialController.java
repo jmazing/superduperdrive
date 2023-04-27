@@ -45,7 +45,7 @@ public class CredentialController {
     @GetMapping("/deleteCredential")
     public String deleteCredential(@RequestParam Integer credentialid) {
         credentialService.deleteCredential(credentialid);
-        return "redirect:/home";
+        return "redirect:/result?success";
     }
 
 }
